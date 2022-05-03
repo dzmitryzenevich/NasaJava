@@ -1,0 +1,43 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.NasaJava" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="MaterialTextView" parent="Widget.Material3.AutoCompleteTextView.FilledBox">
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.Material.Large</item>
+        <item name="android:background">@color/gray</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:elevation">12dp</item>
+        <item name="android:visibility">invisible</item>
+        <item name="showAnimationBehavior">none</item>
+        <item name="hideAnimationBehavior">none</item>
+        <item name="indicatorDirectionCircular">clockwise</item>
+        <item name="showDelay">500</item>
+        <item name="indicatorColor">@color/teal_200</item>
+        <item name="trackColor">@color/white</item>
+    </style>
+
+</resources>

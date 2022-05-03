@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name">NASA</string>
+
+    <string name="load_data_from_db_error">Load data from database error</string>
+    <string name="message_exception">Exception</string>
+    <string name="load_data_start">Start load data</string>
+    <string name="load_data_0">Load data</string>
+    <string name="load_data_1">Load data.</string>
+    <string name="load_data_2">Load data..</string>
+    <string name="load_data_3" tools:ignore="TypographyEllipsis">Load data...</string>
+
+</resources>
