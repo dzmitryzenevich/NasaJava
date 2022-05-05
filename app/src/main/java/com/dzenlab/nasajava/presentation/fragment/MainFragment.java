@@ -23,6 +23,7 @@ import com.dzenlab.nasajava.R;
 import com.dzenlab.nasajava.app.App;
 import com.dzenlab.nasajava.databinding.MainFragmentBinding;
 import com.dzenlab.nasajava.presentation.adapter.ItemAdapter;
+import com.dzenlab.nasajava.presentation.utils.BackPressedListener;
 import com.dzenlab.nasajava.presentation.utils.PicassoHelper;
 import com.dzenlab.nasajava.presentation.utils.SwipeTouchListener;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -31,7 +32,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import javax.inject.Inject;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment implements BackPressedListener {
 
     @Inject
     public MainViewModelFactory mainViewModelFactory;
@@ -45,6 +46,8 @@ public class MainFragment extends Fragment {
     private RecyclerView recyclerView;
 
     private CircularProgressIndicator progressBar;
+
+    private boolean isOpen;
 
     private String url;
 
@@ -269,13 +272,13 @@ public class MainFragment extends Fragment {
 
         viewModel.getStateAndUrl().observe(getViewLifecycleOwner(), response -> {
 
-            boolean newIsOpen = response.isOpen();
+            isOpen = response.isOpen();
 
             String newUrl = response.getUrl();
 
-            showOrHidePicture(newIsOpen);
+            showOrHidePicture(isOpen);
 
-            if(!url.equals(newUrl) && !newUrl.equals("") && newIsOpen) {
+            if(!url.equals(newUrl) && !newUrl.equals("") && isOpen) {
 
                 url = newUrl;
 
@@ -299,10 +302,6 @@ public class MainFragment extends Fragment {
                                 url = "";
                             }
                         });
-
-            } else {
-
-                progressBar.hide();
             }
         });
 
@@ -378,5 +377,18 @@ public class MainFragment extends Fragment {
         TransitionManager.beginDelayedTransition(constraintLayout);
 
         set.applyTo(constraintLayout);
+    }
+
+    @Override
+    public boolean isCloseApp() {
+
+        boolean isClose = !isOpen;
+
+        if(isOpen) {
+
+            viewModel.stateUrlPicture(false, null);
+        }
+
+        return isClose;
     }
 }
