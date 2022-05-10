@@ -1,39 +1,45 @@
 package com.dzenlab.nasajava.data.repository;
 
-import com.dzenlab.nasajava.data.database.models.ItemDelete;
+import com.dzenlab.nasajava.data.database.models.Item;
+import com.dzenlab.nasajava.data.database.models.Query;
 import com.dzenlab.nasajava.data.database.storage.DatabaseStorage;
 import com.dzenlab.nasajava.data.mapper.Mapper;
 import com.dzenlab.nasajava.data.network.storage.NetworkStorage;
-import com.dzenlab.nasajava.data.sharepref.models.Number;
+import com.dzenlab.nasajava.data.sharepref.models.PagingData;
 import com.dzenlab.nasajava.data.sharepref.models.StatePicture;
 import com.dzenlab.nasajava.data.sharepref.models.UrlPicture;
-import com.dzenlab.nasajava.data.sharepref.storage.SharedPrefStorage;
+import com.dzenlab.nasajava.data.sharepref.storage.PagingStorage;
+import com.dzenlab.nasajava.data.sharepref.storage.PictureStorage;
 import com.dzenlab.nasajava.models.ItemNet;
-import com.dzenlab.nasajava.models.ItemDeleteDB;
-import com.dzenlab.nasajava.models.NumberSP;
+import com.dzenlab.nasajava.models.PagingDataSP;
+import com.dzenlab.nasajava.models.QueryDB;
 import com.dzenlab.nasajava.models.StatePictureSP;
 import com.dzenlab.nasajava.models.StateUrlPictureSP;
 import com.dzenlab.nasajava.models.UrlPictureSP;
 import com.dzenlab.nasajava.repository.ItemRepository;
 import java.util.List;
 import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public class ItemRepositoryImpl implements ItemRepository {
 
-    private final SharedPrefStorage sharedPrefStorage;
+    private final PagingStorage pagingStorage;
+
+    private final PictureStorage pictureStorage;
 
     private final NetworkStorage networkStorage;
 
     private final DatabaseStorage databaseStorage;
 
 
-    public ItemRepositoryImpl(SharedPrefStorage sharedPrefStorage,
+    public ItemRepositoryImpl(PagingStorage pagingStorage,
+                              PictureStorage pictureStorage,
                               NetworkStorage networkStorage,
                               DatabaseStorage databaseStorage) {
 
-        this.sharedPrefStorage = sharedPrefStorage;
+        this.pagingStorage = pagingStorage;
+
+        this.pictureStorage = pictureStorage;
 
         this.networkStorage = networkStorage;
 
@@ -41,33 +47,57 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public NumberSP getLastNumber() {
+    public Single<PagingDataSP> getPosition() {
 
-        return new NumberSP(sharedPrefStorage.getNumber().getNumber());
+        return pagingStorage.getPosition().map(data -> new PagingDataSP(data.getData()));
     }
 
     @Override
-    public Completable setLastNumber(NumberSP numberSP) {
+    public Completable setPosition(PagingDataSP pagingDataSP) {
 
-        return sharedPrefStorage.setNumber(new Number(numberSP.getNumber()));
+        return pagingStorage.setPosition(new PagingData(pagingDataSP.getData()));
+    }
+
+    @Override
+    public Single<PagingDataSP> getMinPage() {
+
+        return pagingStorage.getMinPage().map(data -> new PagingDataSP(data.getData()));
+    }
+
+    @Override
+    public Completable setMinPage(PagingDataSP pagingDataSP) {
+
+        return pagingStorage.setMinPage(new PagingData(pagingDataSP.getData()));
+    }
+
+    @Override
+    public Single<PagingDataSP> getItemId() {
+
+        return pagingStorage.getItemId().map(data -> new PagingDataSP(data.getData()));
+    }
+
+    @Override
+    public Completable setItemId(PagingDataSP pagingDataSP) {
+
+        return pagingStorage.setItemId(new PagingData(pagingDataSP.getData()));
     }
 
     @Override
     public StateUrlPictureSP getSateUrlPicture() {
 
-        return Mapper.getStateUrlPictureSP(sharedPrefStorage.getSateUrlPicture());
+        return Mapper.getStateUrlPictureSP(pictureStorage.getSateUrlPicture());
     }
 
     @Override
     public Completable setUrl(UrlPictureSP urlPictureSP) {
 
-        return sharedPrefStorage.setUrl(new UrlPicture(urlPictureSP.getUrl()));
+        return pictureStorage.setUrl(new UrlPicture(urlPictureSP.getUrl()));
     }
 
     @Override
     public Completable setStatePicture(StatePictureSP statePictureSP) {
 
-        return sharedPrefStorage.setStatePictureSP(new StatePicture(statePictureSP.isOpen()));
+        return pictureStorage.setStatePictureSP(new StatePicture(statePictureSP.isOpen()));
     }
 
     @Override
@@ -77,9 +107,16 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Flowable<List<ItemNet>> getAll() {
+    public Single<Integer> getCount() {
 
-        return databaseStorage.getAll().map(Mapper::getItemListFromDBList);
+        return databaseStorage.getCount();
+    }
+
+    @Override
+    public List<ItemNet> getAll(QueryDB queryDB) {
+
+        return Mapper.getItemListFromDBList(databaseStorage.getAll(
+                new Query(queryDB.getLimit(), queryDB.getOffset())));
     }
 
     @Override
@@ -89,8 +126,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public Completable deleteById(ItemDeleteDB itemDeleteDB) {
+    public Completable deleteItem(ItemNet itemNet) {
 
-        return databaseStorage.deleteById(new ItemDelete(itemDeleteDB.getId()));
+        return databaseStorage.deleteItem(new Item(
+                itemNet.getId(), itemNet.getDate(), itemNet.getTitle(), itemNet.getUrl()));
     }
 }

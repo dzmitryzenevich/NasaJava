@@ -2,10 +2,10 @@ package com.dzenlab.nasajava.data.database.storage;
 
 import com.dzenlab.nasajava.data.database.AppDatabase;
 import com.dzenlab.nasajava.data.database.models.Item;
-import com.dzenlab.nasajava.data.database.models.ItemDelete;
+import com.dzenlab.nasajava.data.database.models.Query;
 import java.util.List;
 import io.reactivex.Completable;
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class DatabaseStorage {
 
@@ -16,9 +16,14 @@ public class DatabaseStorage {
         this.appDatabase = appDatabase;
     }
 
-    public Flowable<List<Item>> getAll() {
+    public Single<Integer> getCount() {
 
-        return appDatabase.getItemDao().getAll();
+        return appDatabase.getItemDao().getCount();
+    }
+
+    public List<Item> getAll(Query query) {
+
+        return appDatabase.getItemDao().getAll(query.getLimit(), query.getOffset());
     }
 
     public Completable insertAll(List<Item> list) {
@@ -26,8 +31,8 @@ public class DatabaseStorage {
         return appDatabase.getItemDao().insertAll(list);
     }
 
-    public Completable deleteById(ItemDelete itemDelete) {
+    public Completable deleteItem(Item item) {
 
-        return appDatabase.getItemDao().deleteById(itemDelete);
+        return appDatabase.getItemDao().deleteItem(item);
     }
 }

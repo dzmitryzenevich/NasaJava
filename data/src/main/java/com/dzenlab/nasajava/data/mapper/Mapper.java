@@ -5,12 +5,14 @@ import com.dzenlab.nasajava.data.sharepref.models.StateUrlPicture;
 import com.dzenlab.nasajava.models.ItemNet;
 import com.dzenlab.nasajava.models.StateUrlPictureSP;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import retrofit2.Response;
 
 public class Mapper {
 
-    public static List<ItemNet> getItemListFromNetList(Response<List<com.dzenlab.nasajava.data.network.models.Item>> response) {
+    public static List<ItemNet> getItemListFromNetList(
+            Response<List<com.dzenlab.nasajava.data.network.models.Item>> response) {
 
         if(response.isSuccessful()) {
 
@@ -25,7 +27,7 @@ public class Mapper {
                     ItemNet itemNet = new ItemNet(0,
                             item.getDate(),
                             item.getTitle(),
-                            item.getUrl());
+                            item.getUrl() != null ? item.getUrl() : "");
 
                     itemNetList.add(itemNet);
                 }

@@ -1,11 +1,12 @@
 package com.dzenlab.nasajava.models;
 
+import androidx.annotation.NonNull;
 import java.util.Date;
 import java.util.Objects;
 
 public class ItemNet {
 
-    private final long id;
+    private final int id;
 
     private final Date date;
 
@@ -14,7 +15,7 @@ public class ItemNet {
     private final String url;
 
 
-    public ItemNet(long id, Date date, String title, String url) {
+    public ItemNet(int id, Date date, String title, String url) {
 
         this.id = id;
 
@@ -25,7 +26,7 @@ public class ItemNet {
         this.url = url;
     }
 
-    public long getId() {
+    public int getId() {
 
         return id;
     }
@@ -47,16 +48,13 @@ public class ItemNet {
 
     @Override
     public boolean equals(Object o) {
-
         if (this == o) return true;
-
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (!(o instanceof ItemNet)) return false;
         ItemNet itemNet = (ItemNet) o;
-
-        return getId() == itemNet.getId() && Objects.equals(getDate(),
-                itemNet.getDate()) && Objects.equals(getTitle(),
-                itemNet.getTitle()) && Objects.equals(getUrl(), itemNet.getUrl());
+        return getId() == itemNet.getId() &&
+                Objects.equals(getDate(), itemNet.getDate()) &&
+                Objects.equals(getTitle(), itemNet.getTitle()) &&
+                Objects.equals(getUrl(), itemNet.getUrl());
     }
 
     @Override
@@ -65,6 +63,7 @@ public class ItemNet {
         return Objects.hash(getId(), getDate(), getTitle(), getUrl());
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Item{" +

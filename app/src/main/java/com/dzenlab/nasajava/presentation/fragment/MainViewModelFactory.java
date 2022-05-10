@@ -3,66 +3,52 @@ package com.dzenlab.nasajava.presentation.fragment;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import com.dzenlab.nasajava.usecase.database.DeleteItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.database.GetItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.network.GetItemListFromNetworkUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.GetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.database.SaveItemInDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.SetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.StateUrlPictureUseCase;
+import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
+import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
+import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
+import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
+import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 
 public class MainViewModelFactory implements ViewModelProvider.Factory {
 
-    private final GetLastNumberUseCase getLastNumberUseCase;
+    private final SavePositionAndIdUseCase savePositionAndIdUseCase;
 
-    private final SetLastNumberUseCase setLastNumberUseCase;
+    private final GetItemIdUseCase getItemIdUseCase;
 
     private final StateUrlPictureUseCase stateUrlPictureUseCase;
 
-    private final GetItemListFromNetworkUseCase getItemListFromNetworkUseCase;
+    private final LoadItemsUseCase loadItemsUseCase;
 
-    private final GetItemFromDatabaseUseCase getItemFromDatabaseUseCase;
-
-    private final SaveItemInDatabaseUseCase saveItemInDatabaseUseCase;
-
-    private final DeleteItemFromDatabaseUseCase deleteItemFromDatabaseUseCase;
+    private final DeleteItemUseCase deleteItemUseCase;
 
 
-    public MainViewModelFactory(GetLastNumberUseCase getLastNumberUseCase,
-                                SetLastNumberUseCase setLastNumberUseCase,
+    public MainViewModelFactory(SavePositionAndIdUseCase savePositionAndIdUseCase,
+                                GetItemIdUseCase getItemIdUseCase,
                                 StateUrlPictureUseCase stateUrlPictureUseCase,
-                                GetItemListFromNetworkUseCase getItemListFromNetworkUseCase,
-                                GetItemFromDatabaseUseCase getItemFromDatabaseUseCase,
-                                SaveItemInDatabaseUseCase saveItemInDatabaseUseCase,
-                                DeleteItemFromDatabaseUseCase deleteItemFromDatabaseUseCase) {
+                                LoadItemsUseCase loadItemsUseCase,
+                                DeleteItemUseCase deleteItemUseCase) {
 
-        this.getLastNumberUseCase = getLastNumberUseCase;
+        this.savePositionAndIdUseCase = savePositionAndIdUseCase;
 
-        this.setLastNumberUseCase = setLastNumberUseCase;
+        this.getItemIdUseCase = getItemIdUseCase;
 
         this.stateUrlPictureUseCase = stateUrlPictureUseCase;
 
-        this.getItemListFromNetworkUseCase = getItemListFromNetworkUseCase;
+        this.loadItemsUseCase = loadItemsUseCase;
 
-        this.getItemFromDatabaseUseCase = getItemFromDatabaseUseCase;
-
-        this.saveItemInDatabaseUseCase = saveItemInDatabaseUseCase;
-
-        this.deleteItemFromDatabaseUseCase = deleteItemFromDatabaseUseCase;
+        this.deleteItemUseCase = deleteItemUseCase;
     }
 
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> aClass) {
 
-        //noinspection unchecked
         return (T) new MainViewModel(
-                getLastNumberUseCase,
-                setLastNumberUseCase,
+                savePositionAndIdUseCase,
+                getItemIdUseCase,
                 stateUrlPictureUseCase,
-                getItemListFromNetworkUseCase,
-                getItemFromDatabaseUseCase,
-                saveItemInDatabaseUseCase,
-                deleteItemFromDatabaseUseCase);
+                loadItemsUseCase,
+                deleteItemUseCase);
     }
 }

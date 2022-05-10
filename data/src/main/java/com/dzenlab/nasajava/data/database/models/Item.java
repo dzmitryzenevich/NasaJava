@@ -12,7 +12,7 @@ import java.util.Objects;
 public class Item {
 
     @ColumnInfo(name = ID_COLUMN_NAME)
-    private long id;
+    private final int id;
 
     @ColumnInfo(name = DATE_COLUMN_NAME)
     private final Date date;
@@ -24,7 +24,7 @@ public class Item {
     private final String url;
 
 
-    public Item(long id, Date date, String title, String url) {
+    public Item(int id, Date date, String title, String url) {
 
         this.id = id;
 
@@ -35,14 +35,9 @@ public class Item {
         this.url = url;
     }
 
-    public long getId() {
+    public int getId() {
 
         return id;
-    }
-
-    public void setId(long id) {
-
-        this.id = id;
     }
 
     public Date getDate() {

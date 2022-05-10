@@ -8,7 +8,7 @@ public class Constants {
 
     public static final String ITEM_TABLE_NAME = "item_entity";
 
-    public static final String ID_COLUMN_NAME = "-id";
+    public static final String ID_COLUMN_NAME = "_id";
 
     public static final String DATE_COLUMN_NAME = "date";
 

@@ -1,13 +1,11 @@
 package com.dzenlab.nasajava.di.module;
 
 import com.dzenlab.nasajava.presentation.fragment.MainViewModelFactory;
-import com.dzenlab.nasajava.usecase.database.DeleteItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.database.GetItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.network.GetItemListFromNetworkUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.GetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.database.SaveItemInDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.SetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.StateUrlPictureUseCase;
+import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
+import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
+import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
+import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
+import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 import dagger.Module;
 import dagger.Provides;
 
@@ -15,21 +13,17 @@ import dagger.Provides;
 public class PresentationModule {
 
     @Provides
-    public MainViewModelFactory provideMVMFactory(GetLastNumberUseCase getLastNumber,
-                                                  SetLastNumberUseCase setLastNumber,
+    public MainViewModelFactory provideMVMFactory(SavePositionAndIdUseCase SavePositionAndIdUseCase,
                                                   StateUrlPictureUseCase stateUrlPictureUseCase,
-                                                  GetItemListFromNetworkUseCase getItemListFromNet,
-                                                  GetItemFromDatabaseUseCase getItemDB,
-                                                  SaveItemInDatabaseUseCase saveItemDB,
-                                                  DeleteItemFromDatabaseUseCase deleteItemDB) {
+                                                  LoadItemsUseCase loadItemsUseCase,
+                                                  DeleteItemUseCase deleteItemUseCase,
+                                                  GetItemIdUseCase getItemIdUseCase) {
 
         return new MainViewModelFactory(
-                getLastNumber,
-                setLastNumber,
+                SavePositionAndIdUseCase,
+                getItemIdUseCase,
                 stateUrlPictureUseCase,
-                getItemListFromNet,
-                getItemDB,
-                saveItemDB,
-                deleteItemDB);
+                loadItemsUseCase,
+                deleteItemUseCase);
     }
 }

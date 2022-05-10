@@ -19,12 +19,25 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/message_text_view"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/MaterialTextView"
         android:textColor="@color/black"
         android:visibility="invisible"
+        app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/progress_indicator"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progress_indicator"
+        android:layout_marginTop="20dp"
+        app:indicatorColor="@color/purple_700"
+        app:trackColor="@color/teal_200"
+        style="@style/CircularProgressIndicator"
+        app:layout_constraintTop_toBottomOf="@+id/message_text_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

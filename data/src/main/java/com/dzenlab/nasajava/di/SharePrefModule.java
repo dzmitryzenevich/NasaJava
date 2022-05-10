@@ -3,7 +3,8 @@ package com.dzenlab.nasajava.di;
 import static com.dzenlab.nasajava.data.sharepref.Constants.SHARED_PREFERENCES_NAME;
 import android.content.Context;
 import android.content.SharedPreferences;
-import com.dzenlab.nasajava.data.sharepref.storage.SharedPrefStorage;
+import com.dzenlab.nasajava.data.sharepref.storage.PagingStorage;
+import com.dzenlab.nasajava.data.sharepref.storage.PictureStorage;
 import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
@@ -13,9 +14,16 @@ public class SharePrefModule {
 
     @Provides
     @Singleton
-    public SharedPrefStorage provideSharedPrefStorage(SharedPreferences sharedPreferences) {
+    public PagingStorage providePagingStorage(SharedPreferences sharedPreferences) {
 
-        return new SharedPrefStorage(sharedPreferences);
+        return new PagingStorage(sharedPreferences);
+    }
+
+    @Provides
+    @Singleton
+    public PictureStorage providePictureStorage(SharedPreferences sharedPreferences) {
+
+        return new PictureStorage(sharedPreferences);
     }
 
     @Provides

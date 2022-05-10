@@ -1,10 +1,10 @@
 package com.dzenlab.nasajava.presentation.adapter;
 
-import static com.dzenlab.nasajava.presentation.constants.Constants.FORMAT_DATE;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import com.dzenlab.nasajava.R;
@@ -40,14 +40,18 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         dateTV = itemView.findViewById(R.id.date_text_view);
     }
 
-    public void bind(ItemNet itemNet, ItemAdapter.ClickCallback clickCallback) {
+    public void bind(@Nullable ItemNet itemNet, ItemAdapter.ClickCallback clickCallback) {
 
-        titleTV.setText(itemNet.getTitle());
+        if(itemNet != null) {
 
-        String date = new SimpleDateFormat(FORMAT_DATE, new Locale("ru")).format(itemNet.getDate());
+            titleTV.setText(itemNet.getTitle());
 
-        dateTV.setText(date);
+            String date = new SimpleDateFormat("dd MMMM yyyy", new Locale("ru"))
+                    .format(itemNet.getDate());
 
-        cardView.setOnClickListener(view -> clickCallback.onClickListener(itemNet.getUrl()));
+            dateTV.setText(date);
+
+            cardView.setOnClickListener(view -> clickCallback.onClickListener(itemNet.getUrl()));
+        }
     }
 }

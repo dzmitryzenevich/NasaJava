@@ -17,7 +17,7 @@ public class ItemEntity {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = ID_COLUMN_NAME)
-    private final long id;
+    private final int id;
 
     @NonNull
     @ColumnInfo(name = DATE_COLUMN_NAME)
@@ -32,7 +32,10 @@ public class ItemEntity {
     private final String url;
 
 
-    public ItemEntity(long id, @NonNull Date date, @NonNull String title, @NonNull String url) {
+    public ItemEntity(int id,
+                      @NonNull Date date,
+                      @NonNull String title,
+                      @NonNull String url) {
 
         this.id = id;
 
@@ -43,7 +46,7 @@ public class ItemEntity {
         this.url = url;
     }
 
-    public long getId() {
+    public int getId() {
 
         return id;
     }

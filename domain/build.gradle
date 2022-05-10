@@ -1,14 +1,63 @@
 plugins {
-    id 'java-library'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+android {
+    compileSdk 32
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 32
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    signingConfigs {
+
+        signingConfigs {
+
+            release {
+                storeFile file("/sign/release.jks")
+                storePassword "11086739758306036784"
+                keyAlias "releaseversionnasajava"
+                keyPassword "11086739758306036784"
+            }
+
+            debug {
+                storeFile file("/sign/debug.jks")
+                storePassword "86998735995734635512"
+                keyAlias "debugversionnasajava"
+                keyPassword "86998735995734635512"
+            }
+        }
+    }
+
+    buildTypes {
+
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'androidx.paging:paging-common:3.1.1'
+    implementation 'androidx.paging:paging-rxjava2:3.1.1'
 }

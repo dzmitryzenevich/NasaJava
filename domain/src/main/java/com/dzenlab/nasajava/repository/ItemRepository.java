@@ -1,22 +1,28 @@
 package com.dzenlab.nasajava.repository;
 
 import com.dzenlab.nasajava.models.ItemNet;
-import com.dzenlab.nasajava.models.ItemDeleteDB;
-import com.dzenlab.nasajava.models.NumberSP;
+import com.dzenlab.nasajava.models.PagingDataSP;
+import com.dzenlab.nasajava.models.QueryDB;
 import com.dzenlab.nasajava.models.StatePictureSP;
 import com.dzenlab.nasajava.models.StateUrlPictureSP;
 import com.dzenlab.nasajava.models.UrlPictureSP;
-
 import java.util.List;
 import io.reactivex.Completable;
-import io.reactivex.Flowable;
 import io.reactivex.Single;
 
 public interface ItemRepository {
 
-    NumberSP getLastNumber();
+    Single<PagingDataSP> getPosition();
 
-    Completable setLastNumber(NumberSP numberSP);
+    Completable setPosition(PagingDataSP pagingDataSP);
+
+    Single<PagingDataSP> getMinPage();
+
+    Completable setMinPage(PagingDataSP pagingDataSP);
+
+    Single<PagingDataSP> getItemId();
+
+    Completable setItemId(PagingDataSP pagingDataSP);
 
     StateUrlPictureSP getSateUrlPicture();
 
@@ -26,9 +32,11 @@ public interface ItemRepository {
 
     Single<List<ItemNet>> getItemList();
 
-    Flowable<List<ItemNet>> getAll();
+    Single<Integer> getCount();
+
+    List<ItemNet> getAll(QueryDB queryDB);
 
     Completable insertAll(List<ItemNet> list);
 
-    Completable deleteById(ItemDeleteDB itemDeleteDB);
+    Completable deleteItem(ItemNet itemNet);
 }

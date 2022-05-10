@@ -1,94 +1,74 @@
 package com.dzenlab.nasajava.presentation.fragment;
 
-import static com.dzenlab.nasajava.presentation.constants.Code.*;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.dzenlab.nasajava.models.ItemDeleteDB;
-import com.dzenlab.nasajava.models.NumberSP;
+import androidx.lifecycle.ViewModelKt;
+import androidx.paging.PagingData;
+import androidx.paging.rxjava2.PagingRx;
+import com.dzenlab.nasajava.models.ItemNet;
 import com.dzenlab.nasajava.models.StateUrlPictureSP;
-import com.dzenlab.nasajava.presentation.constants.Code;
-import com.dzenlab.nasajava.presentation.models.Message;
-import com.dzenlab.nasajava.models.ResponseDB;
-import com.dzenlab.nasajava.usecase.database.DeleteItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.database.GetItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.network.GetItemListFromNetworkUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.GetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.database.SaveItemInDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.SetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.StateUrlPictureUseCase;
-import java.util.concurrent.TimeUnit;
+import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
+import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
+import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
+import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
+import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 import io.reactivex.Flowable;
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import kotlinx.coroutines.CoroutineScope;
 
 public class MainViewModel extends ViewModel {
 
-    private final GetLastNumberUseCase getLastNumberUseCase;
+    private final SavePositionAndIdUseCase savePositionAndIdUseCase;
 
-    private final SetLastNumberUseCase setLastNumberUseCase;
+    private final GetItemIdUseCase getItemIdUseCase;
 
     private final StateUrlPictureUseCase stateUrlPictureUseCase;
 
-    private final GetItemListFromNetworkUseCase getItemListFromNetworkUseCase;
+    private final LoadItemsUseCase loadItemsUseCase;
 
-    private final SaveItemInDatabaseUseCase saveItemInDatabaseUseCase;
+    private final DeleteItemUseCase deleteItemUseCase;
 
-    private final DeleteItemFromDatabaseUseCase deleteItemFromDatabaseUseCase;
+    private MutableLiveData<Integer> itemId;
 
-    private final LiveData<ResponseDB> itemList;
+    private LiveData<PagingData<ItemNet>> itemList;
 
-    private final MutableLiveData<Boolean> isLoadData = new MutableLiveData<>(false);
+    private MutableLiveData<StateUrlPictureSP> stateAndUrl;
 
-    private final MutableLiveData<Integer> position = new MutableLiveData<>();
+    private MutableLiveData<Boolean> refreshList;
 
-    private final MutableLiveData<Message> message =
-            new MutableLiveData<>(new Message(null, CODE_NONE));
-
-    private final MutableLiveData<StateUrlPictureSP> stateAndUrl = new MutableLiveData<>();
-
-    private Disposable loadDataDisposable;
-
-    private Disposable deleteDisposable;
-
-    private Disposable intervalDisposable;
+    private Disposable disposable;
 
 
-    public MainViewModel(GetLastNumberUseCase getLastNumberUseCase,
-                         SetLastNumberUseCase setLastNumberUseCase,
+    public MainViewModel(SavePositionAndIdUseCase savePositionAndIdUseCase,
+                         GetItemIdUseCase getItemIdUseCase,
                          StateUrlPictureUseCase stateUrlPictureUseCase,
-                         GetItemListFromNetworkUseCase getItemListFromNetworkUseCase,
-                         GetItemFromDatabaseUseCase getItemFromDatabaseUseCase,
-                         SaveItemInDatabaseUseCase saveItemInDatabaseUseCase,
-                         DeleteItemFromDatabaseUseCase deleteItemFromDatabaseUseCase) {
+                         LoadItemsUseCase loadItemsUseCase,
+                         DeleteItemUseCase deleteItemUseCase) {
 
-        this.getLastNumberUseCase = getLastNumberUseCase;
+        this.savePositionAndIdUseCase = savePositionAndIdUseCase;
 
-        this.setLastNumberUseCase = setLastNumberUseCase;
+        this.getItemIdUseCase = getItemIdUseCase;
 
         this.stateUrlPictureUseCase = stateUrlPictureUseCase;
 
-        this.getItemListFromNetworkUseCase = getItemListFromNetworkUseCase;
+        this.loadItemsUseCase = loadItemsUseCase;
 
-        this.saveItemInDatabaseUseCase = saveItemInDatabaseUseCase;
+        this.deleteItemUseCase = deleteItemUseCase;
 
-        this.deleteItemFromDatabaseUseCase = deleteItemFromDatabaseUseCase;
+        disposable = null;
 
-        Flowable<ResponseDB> flowable = getItemFromDatabaseUseCase.execute()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .publish()
-                .autoConnect();
+        initId();
 
-        this.itemList = LiveDataReactiveStreams.fromPublisher(flowable);
+        initList();
 
-        StateUrlPictureSP stateUrlPictureSP = stateUrlPictureUseCase.execute(null, null);
+        initPicture();
 
-        this.stateAndUrl.setValue(stateUrlPictureSP);
+        initialRefreshList();
     }
 
     @Override
@@ -96,93 +76,50 @@ public class MainViewModel extends ViewModel {
 
         super.onCleared();
 
-        if(loadDataDisposable != null) loadDataDisposable.dispose();
+        if(disposable != null && !disposable.isDisposed()) {
 
-        if(deleteDisposable != null) deleteDisposable.dispose();
+            disposable.dispose();
 
-        if(intervalDisposable != null) intervalDisposable.dispose();
+            disposable = null;
+        }
     }
 
-    public LiveData<ResponseDB> getItemList() {
+    public LiveData<Integer> getItemId() {
+
+        return itemId;
+    }
+
+    public LiveData<PagingData<ItemNet>> getItemList() {
 
         return itemList;
     }
 
-    public MutableLiveData<Boolean> isLoadData() {
-
-        return isLoadData;
-    }
-
-    public LiveData<Message> getMessage() {
-
-        return message;
-    }
-
-    public MutableLiveData<Integer> getPosition() {
-
-        return position;
-    }
-
-    public MutableLiveData<StateUrlPictureSP> getStateAndUrl() {
+    public LiveData<StateUrlPictureSP> getStateAndUrl() {
 
         return stateAndUrl;
     }
 
-    public void getItemListFromNetwork() {
+    public LiveData<Boolean> getRefreshList() {
 
-        if(isLoadData.getValue() != null && !isLoadData.getValue()) {
-
-            isLoadData.setValue(true);
-
-            loadDataDisposable = getItemListFromNetworkUseCase.execute()
-                    .flatMapCompletable(saveItemInDatabaseUseCase::execute)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> isLoadData.setValue(false), this::loadDataError);
-        }
+        return refreshList;
     }
 
-    public void startInterval() {
+    public void getPositionOK() {
 
-        if(intervalDisposable == null || intervalDisposable.isDisposed()) {
-
-            message.setValue(new Message(null, CODE_START_LOAD_DATA));
-
-            intervalDisposable = Observable.interval(200, TimeUnit.MILLISECONDS)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(time -> message.setValue(timer(time)), this::intervalError);
-        }
+        itemId.setValue(null);
     }
 
-    public void stopInterval() {
+    public void setPositionAndId(int position, int id) {
 
-        if(intervalDisposable != null && !intervalDisposable.isDisposed()) {
-
-            message.setValue(new Message(null, CODE_STOP_LOAD_DATA));
-
-            message.setValue(new Message(null, CODE_NONE));
-
-            intervalDisposable.dispose();
-        }
+        savePositionAndIdUseCase.execute(position, id).subscribe();
     }
 
-    public void deleteItemFromDatabase(long id) {
+    public void deleteItem(ItemNet itemNet) {
 
-        deleteDisposable = deleteItemFromDatabaseUseCase.execute(new ItemDeleteDB(id))
+        disposable = deleteItemUseCase.execute(itemNet)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> this.setPosition(0));
-    }
-
-    public void setPosition(int position) {
-
-        setLastNumberUseCase.execute(new NumberSP(position)).subscribe();
-    }
-
-    public void installPosition() {
-
-        position.setValue(getLastNumberUseCase.execute().getNumber());
+                .subscribe(this::refreshList);
     }
 
     public boolean stateUrlPicture(boolean isOpen, @Nullable String url) {
@@ -247,39 +184,45 @@ public class MainViewModel extends ViewModel {
         return flag;
     }
 
-    private Message timer(long time) {
+    private void initId() {
 
-        Code code;
+        int id = getItemIdUseCase.execute().blockingGet().getData();
 
-        if(time % 4 == 1) {
-
-            code = CODE_LOAD_DATA_1;
-
-        } else if(time % 4 == 2) {
-
-            code = CODE_LOAD_DATA_2;
-
-        } else if(time % 4 == 3) {
-
-            code = CODE_LOAD_DATA_3;
-
-        } else {
-
-            code = CODE_LOAD_DATA_0;
-        }
-
-        return new Message(null, code);
+        itemId = new MutableLiveData<>(id);
     }
 
-    private void loadDataError(Throwable throwable) {
+    private void initList() {
 
-        isLoadData.setValue(false);
+        CoroutineScope viewModelScope = ViewModelKt.getViewModelScope(this);
 
-        message.setValue(new Message(throwable.getMessage(), CODE_EXCEPTION));
+        Flowable<PagingData<ItemNet>> flowableItemNet =
+                PagingRx.getFlowable(loadItemsUseCase.execute(10));
+
+        Flowable<PagingData<ItemNet>> flowable = PagingRx.cachedIn(flowableItemNet, viewModelScope)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .publish()
+                .autoConnect();
+
+        itemList = LiveDataReactiveStreams.fromPublisher(flowable);
     }
 
-    private void intervalError(Throwable throwable) {
+    private void initPicture() {
 
-        message.setValue(new Message(throwable.getMessage(), CODE_EXCEPTION));
+        StateUrlPictureSP stateUrlPictureSP = stateUrlPictureUseCase.execute(null, null);
+
+        stateAndUrl = new MutableLiveData<>(stateUrlPictureSP);
+    }
+
+    private void initialRefreshList() {
+
+        refreshList = new MutableLiveData<>();
+    }
+
+    private void refreshList() {
+
+        refreshList.setValue(true);
+
+        refreshList.setValue(false);
     }
 }

@@ -1,4 +1,4 @@
-package com.dzenlab.nasajava.usecase.sharepref;
+package com.dzenlab.nasajava.usecase;
 
 import com.dzenlab.nasajava.models.StatePictureSP;
 import com.dzenlab.nasajava.models.StateUrlPictureSP;
@@ -6,10 +6,6 @@ import com.dzenlab.nasajava.models.UrlPictureSP;
 import com.dzenlab.nasajava.repository.ItemRepository;
 import org.jetbrains.annotations.Nullable;
 import io.reactivex.schedulers.Schedulers;
-
-//import java.util.logging.Level;
-//import java.util.logging.Logger;
-//Logger.getLogger("MY_LOG").log(Level.INFO, "");
 
 public class StateUrlPictureUseCase {
 

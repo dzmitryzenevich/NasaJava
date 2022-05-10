@@ -1,30 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="..\:/Android/AndroidProjectCLEAN/NacaJava/app/src/main/res/layout/main_activity.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NacaJava/app/src/main/res/layout/main_fragment.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/drawable/ic_menu_insult.xml" value="0.13" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout-land/adapter_item.xml" value="0.25235849056603776" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout-land/main_fragment.xml" value="0.13333333333333333" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout/adapter_item.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout/card_view_picture.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout/layout_picture.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout/main_activity.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/layout/main_fragment.xml" value="0.16770833333333332" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.13" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.13" />
-        <entry key="..\:/Android/AndroidProjectCLEAN/NasaJava/app/src/main/res/xml/network_security_config.xml" value="0.16770833333333332" />
-      </map>
-    </option>
-  </component>
-  <component name="EntryPointsManager">
-    <list size="1">
-      <item index="0" class="java.lang.String" itemvalue="androidx.room.ColumnInfo" />
-    </list>
-  </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_X" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

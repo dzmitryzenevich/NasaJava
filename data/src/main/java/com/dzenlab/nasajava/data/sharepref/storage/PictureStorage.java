@@ -1,40 +1,21 @@
 package com.dzenlab.nasajava.data.sharepref.storage;
 
-import static com.dzenlab.nasajava.data.sharepref.Constants.NUMBER_KEY;
 import static com.dzenlab.nasajava.data.sharepref.Constants.STATE_PICTURE_KEY;
 import static com.dzenlab.nasajava.data.sharepref.Constants.URL_PICTURE_KEY;
-
 import android.content.SharedPreferences;
-import com.dzenlab.nasajava.data.sharepref.models.Number;
 import com.dzenlab.nasajava.data.sharepref.models.StatePicture;
 import com.dzenlab.nasajava.data.sharepref.models.StateUrlPicture;
 import com.dzenlab.nasajava.data.sharepref.models.UrlPicture;
-
 import io.reactivex.Completable;
 
-public class SharedPrefStorage {
+public class PictureStorage {
 
     private final SharedPreferences sharedPreferences;
 
 
-    public SharedPrefStorage(SharedPreferences sharedPreferences) {
+    public PictureStorage(SharedPreferences sharedPreferences) {
 
         this.sharedPreferences = sharedPreferences;
-    }
-
-    public Number getNumber() {
-
-        return new Number(sharedPreferences.getInt(NUMBER_KEY, 0));
-    }
-
-    public Completable setNumber(Number number) {
-
-        return Completable.create(emitter -> {
-
-            sharedPreferences.edit().putInt(NUMBER_KEY, number.getNumber()).apply();
-
-            emitter.onComplete();
-        });
     }
 
     public StateUrlPicture getSateUrlPicture() {

@@ -1,30 +1,16 @@
 package com.dzenlab.nasajava.di.module;
 
 import com.dzenlab.nasajava.repository.ItemRepository;
-import com.dzenlab.nasajava.usecase.database.DeleteItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.database.GetItemFromDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.network.GetItemListFromNetworkUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.GetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.database.SaveItemInDatabaseUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.SetLastNumberUseCase;
-import com.dzenlab.nasajava.usecase.sharepref.StateUrlPictureUseCase;
+import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
+import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
+import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
+import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
+import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class DomainModule {
-
-    @Provides
-    public GetLastNumberUseCase provideGetLastNumberUseCase(ItemRepository itemRepository) {
-
-        return new GetLastNumberUseCase(itemRepository);
-    }
-
-    @Provides
-    public SetLastNumberUseCase provideSetLastNumberUseCase(ItemRepository itemRepository) {
-
-        return new SetLastNumberUseCase(itemRepository);
-    }
 
     @Provides
     public StateUrlPictureUseCase provideStateUrlPictureUseCase(ItemRepository itemRepository) {
@@ -33,30 +19,26 @@ public class DomainModule {
     }
 
     @Provides
-    public GetItemListFromNetworkUseCase provideGetItemListFromNetworkUseCase(ItemRepository
-                                                                              itemRepository) {
+    public GetItemIdUseCase provideGetItemIdUseCase(ItemRepository itemRepository) {
 
-        return new GetItemListFromNetworkUseCase(itemRepository);
+        return new GetItemIdUseCase(itemRepository);
     }
 
     @Provides
-    public GetItemFromDatabaseUseCase provideGetItemFromDatabaseUseCase(ItemRepository
-                                                                        itemRepository) {
+    public SavePositionAndIdUseCase provideSavePositionAndIdUseCase(ItemRepository itemRepository) {
 
-        return new GetItemFromDatabaseUseCase(itemRepository);
+        return new SavePositionAndIdUseCase(itemRepository);
     }
 
     @Provides
-    public SaveItemInDatabaseUseCase provideSaveItemInDatabaseUseCase(ItemRepository
-                                                                      itemRepository) {
+    public LoadItemsUseCase provideLoadItemsUseCase(ItemRepository itemRepository) {
 
-        return new SaveItemInDatabaseUseCase(itemRepository);
+        return new LoadItemsUseCase(itemRepository);
     }
 
     @Provides
-    public DeleteItemFromDatabaseUseCase provideDeleteItemFromDatabaseUseCase(ItemRepository
-                                                                              itemRepository) {
+    public DeleteItemUseCase provideDeleteItemUseCase(ItemRepository itemRepository) {
 
-        return new DeleteItemFromDatabaseUseCase(itemRepository);
+        return new DeleteItemUseCase(itemRepository);
     }
 }

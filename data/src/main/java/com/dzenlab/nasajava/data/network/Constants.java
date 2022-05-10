@@ -28,7 +28,7 @@ public class Constants {
 
     public static final String QUERY_API_KEY_VALUE = "kDdwKaaXS3nqVSZhE63czFodGMynJ8cbIXQ21tmO";
 
-    public static final int QUERY_COUNT_VALUE = 20;
+    public static final int QUERY_COUNT_VALUE = 50;
 
     public static final String DATE_JSON = "date";
 

@@ -39,6 +39,8 @@
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_indicator"
             style="@style/CircularProgressIndicator"
+            app:indicatorColor="@color/teal_200"
+            app:trackColor="@color/white"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

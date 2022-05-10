@@ -2,11 +2,12 @@ package com.dzenlab.nasajava.presentation.adapter;
 
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.paging.PagingDataAdapter;
 import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import com.dzenlab.nasajava.models.ItemNet;
 
-public class ItemAdapter extends ListAdapter<ItemNet, ItemViewHolder> {
+public class ItemAdapter extends PagingDataAdapter<ItemNet, ItemViewHolder> {
 
     private final ClickCallback clickCallback;
 
@@ -20,16 +21,13 @@ public class ItemAdapter extends ListAdapter<ItemNet, ItemViewHolder> {
         @Override
         public boolean areItemsTheSame(@NonNull ItemNet oldItemNet, @NonNull ItemNet newItemNet) {
 
-            return oldItemNet.equals(newItemNet);
+            return oldItemNet.getId() == newItemNet.getId();
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull ItemNet oldItemNet, @NonNull ItemNet newItemNet) {
 
-            return oldItemNet.getId() == newItemNet.getId() &&
-                    oldItemNet.getTitle().equals(newItemNet.getTitle()) &&
-                    oldItemNet.getDate().equals(newItemNet.getDate()) &&
-                    oldItemNet.getUrl().equals(newItemNet.getUrl());
+            return oldItemNet.equals(newItemNet);
         }
     }
 
@@ -54,8 +52,9 @@ public class ItemAdapter extends ListAdapter<ItemNet, ItemViewHolder> {
         holder.bind(getItem(position), clickCallback);
     }
 
-    public long getItemId(int position) {
+    @Nullable
+    public ItemNet getItemNet(int position) {
 
-        return getCurrentList().get(position).getId();
+        return getItem(position);
     }
 }

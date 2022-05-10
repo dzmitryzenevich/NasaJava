@@ -15,11 +15,9 @@
     </style>
 
     <style name="MaterialTextView" parent="Widget.Material3.AutoCompleteTextView.FilledBox">
-        <item name="android:layout_marginTop">16dp</item>
-        <item name="android:layout_marginBottom">16dp</item>
-        <item name="android:layout_marginStart">16dp</item>
-        <item name="android:layout_marginEnd">16dp</item>
-        <item name="android:padding">8dp</item>
+        <item name="android:layout_marginStart">32dp</item>
+        <item name="android:layout_marginEnd">32dp</item>
+        <item name="android:padding">16dp</item>
         <item name="android:gravity">center</item>
         <item name="android:textAppearance">@android:style/TextAppearance.Material.Large</item>
         <item name="android:background">@color/gray</item>
@@ -35,9 +33,7 @@
         <item name="showAnimationBehavior">none</item>
         <item name="hideAnimationBehavior">none</item>
         <item name="indicatorDirectionCircular">clockwise</item>
-        <item name="showDelay">500</item>
-        <item name="indicatorColor">@color/teal_200</item>
-        <item name="trackColor">@color/white</item>
+        <item name="showDelay">50</item>
     </style>
 
 </resources>

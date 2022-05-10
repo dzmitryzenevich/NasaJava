@@ -10,9 +10,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.paging.LoadState;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.os.Handler;
+import android.os.Looper;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,7 @@ import android.widget.TextView;
 import com.dzenlab.nasajava.R;
 import com.dzenlab.nasajava.app.App;
 import com.dzenlab.nasajava.databinding.MainFragmentBinding;
+import com.dzenlab.nasajava.models.ItemNet;
 import com.dzenlab.nasajava.presentation.adapter.ItemAdapter;
 import com.dzenlab.nasajava.presentation.utils.BackPressedListener;
 import com.dzenlab.nasajava.presentation.utils.PicassoHelper;
@@ -29,7 +33,6 @@ import com.dzenlab.nasajava.presentation.utils.SwipeTouchListener;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import java.util.ArrayList;
 import javax.inject.Inject;
 
 public class MainFragment extends Fragment implements BackPressedListener {
@@ -45,18 +48,30 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
     private RecyclerView recyclerView;
 
+    private CircularProgressIndicator pictureProgressBar;
+
     private CircularProgressIndicator progressBar;
+
+    private ImageView imageView;
+
+    private TextView message;
+
+    private Handler handler;
+
+    private Integer itemId;
 
     private boolean isOpen;
 
     private String url;
 
+    private ItemAdapter itemAdapter;
+
 
     public static MainFragment newInstance() {
+
         return new MainFragment();
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -70,22 +85,121 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
         View root = binding.getRoot();
 
-        progressBar = binding.cardViewPicture.progressIndicator;
+        init();
+
+        position();
+
+        recyclerView();
+
+        image();
+
+        return root;
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        super.onDestroyView();
+
+        handler.removeCallbacksAndMessages(null);
+
+        binding = null;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+
+        super.onAttach(context);
+
+        App app = (App) requireActivity().getApplicationContext();
+
+        app.appComponent.fragmentComponent().create().inject(this);
+    }
+
+    @Override
+    public void onPause() {
+
+        super.onPause();
+
+        LinearLayoutManager linearLayoutManager =
+                ((LinearLayoutManager)recyclerView.getLayoutManager());
+
+        if(linearLayoutManager != null) {
+
+            int position = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+            if(position >= 0) {
+
+                ItemNet item = itemAdapter.getItemNet(position);
+
+                if(item != null) {
+
+                    viewModel.setPositionAndId(position, item.getId());
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean isCloseApp() {
+
+        boolean isClose = !isOpen;
+
+        if(isOpen) {
+
+            viewModel.stateUrlPicture(false, null);
+        }
+
+        return isClose;
+    }
+
+    private void init() {
 
         constraintLayout = binding.main;
 
-        TextView message = binding.messageTextView;
+        itemAdapter = new ItemAdapter(callback, new ItemAdapter.ItemDiff());
 
         recyclerView = binding.recyclerView;
 
-        ItemAdapter itemAdapter = new ItemAdapter(url ->
-                viewModel.stateUrlPicture(true, url), new ItemAdapter.ItemDiff());
+        message = binding.messageTextView;
+
+        pictureProgressBar = binding.cardViewPicture.progressIndicator;
+
+        progressBar = binding.progressIndicator;
+
+        handler = new Handler(Looper.getMainLooper());
+
+        itemId = null;
+
+        isOpen = false;
+
+        url = "";
+    }
+
+    private void position() {
+
+        viewModel.getItemId().observe(getViewLifecycleOwner(), response -> {
+
+            if(response != null) {
+
+                itemId = response;
+
+                viewModel.getPositionOK();
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void recyclerView() {
 
         recyclerView.setItemAnimator(null);
 
         recyclerView.setAdapter(itemAdapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        recyclerView.setOnTouchListener((view, motionEvent) ->
+                viewModel.stateUrlPicture(false, null));
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -99,17 +213,164 @@ public class MainFragment extends Fragment implements BackPressedListener {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder,
                                  int direction) {
 
-                long id = itemAdapter.getItemId(viewHolder.getAdapterPosition());
+                ItemNet item = itemAdapter.getItemNet(viewHolder.getAbsoluteAdapterPosition());
 
-                viewModel.deleteItemFromDatabase(id);
+                if(item != null) {
+
+                    viewModel.deleteItem(item);
+                }
             }
 
         }).attachToRecyclerView(recyclerView);
 
-        recyclerView.setOnTouchListener((view, motionEvent) ->
-                viewModel.stateUrlPicture(false, null));
+        itemAdapter.addLoadStateListener(state -> {
 
-        ImageView imageView = binding.cardViewPicture.imageView;
+            LoadState.Error stateError = null;
+
+            if(state.getSource().getRefresh() instanceof LoadState.Loading) {
+
+                handler.removeCallbacksAndMessages(null);
+
+                if(itemId != null) {
+
+                    recyclerView.setVisibility(View.GONE);
+
+                    message.setText(R.string.load_data);
+
+                    message.setVisibility(View.VISIBLE);
+
+                    progressBar.show();
+
+                } else {
+
+                    handler.postDelayed(() -> {
+
+                        message.setText(R.string.load_data);
+
+                        message.setVisibility(View.VISIBLE);
+
+                        progressBar.show();
+
+                    }, 100);
+                }
+
+            } else if(state.getSource().getRefresh() instanceof LoadState.NotLoading) {
+
+                handler.removeCallbacksAndMessages(null);
+
+                if(itemId != null) {
+
+                    handler.postDelayed(() -> {
+
+                        LinearLayoutManager linearLayoutManager =
+                                ((LinearLayoutManager)recyclerView.getLayoutManager());
+
+                        if(linearLayoutManager != null) {
+
+                            for(ItemNet itemNet : itemAdapter.snapshot().getItems()) {
+
+                                if(itemNet.getId() == itemId) {
+
+                                    int id = itemAdapter.snapshot().indexOf(itemNet);
+
+                                    linearLayoutManager.scrollToPositionWithOffset(id, 0);
+                                }
+                            }
+                        }
+
+                        itemId = null;
+
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+                            message.setText("");
+
+                            message.setVisibility(View.GONE);
+
+                            progressBar.hide();
+
+                            recyclerView.setVisibility(View.VISIBLE);
+
+                        },50);
+
+                    }, 500);
+
+                } else {
+
+                    message.setText("");
+
+                    message.setVisibility(View.GONE);
+
+                    progressBar.hide();
+                }
+
+            } else if(state.getSource().getAppend() instanceof LoadState.Error) {
+
+                stateError = (LoadState.Error) state.getSource().getAppend();
+
+            } else if(state.getSource().getRefresh() instanceof LoadState.Error) {
+
+                stateError = (LoadState.Error) state.getSource().getRefresh();
+
+            } else if(state.getSource().getPrepend() instanceof LoadState.Error) {
+
+                stateError = (LoadState.Error) state.getSource().getPrepend();
+
+            } else {
+
+                handler.removeCallbacksAndMessages(null);
+
+                message.setText("");
+
+                message.setVisibility(View.GONE);
+
+                recyclerView.setVisibility(View.GONE);
+
+                new Handler(Looper.getMainLooper()).postDelayed(progressBar::hide, 50);
+            }
+
+            if(stateError != null) {
+
+                handler.removeCallbacksAndMessages(null);
+
+                recyclerView.setVisibility(View.GONE);
+
+                new Handler(Looper.getMainLooper()).postDelayed(progressBar::hide, 50);
+
+                String error = stateError.getError().getMessage();
+
+                if(error != null) {
+
+                    String errorMessage = getString(R.string.load_data_error) + "\n" + error;
+
+                    message.setText(errorMessage);
+
+                } else {
+
+                    message.setText(R.string.load_data_error);
+                }
+
+                message.setVisibility(View.VISIBLE);
+            }
+
+            return null;
+        });
+
+        viewModel.getItemList().observe(getViewLifecycleOwner(), response ->
+                itemAdapter.submitData(getLifecycle(), response));
+
+        viewModel.getRefreshList().observe(getViewLifecycleOwner(), response -> {
+
+            if(response) {
+
+                itemAdapter.refresh();
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void image() {
+
+        imageView = binding.cardViewPicture.imageView;
 
         imageView.setOnTouchListener(new SwipeTouchListener(requireContext()) {
 
@@ -138,137 +399,7 @@ public class MainFragment extends Fragment implements BackPressedListener {
             }
         });
 
-        viewModel.getItemList().observe(getViewLifecycleOwner(), response -> {
-
-            itemAdapter.submitList(response.getList());
-
-            if(response.getError() == null) {
-
-                if(response.getList().size() == 0) {
-
-                    viewModel.getItemListFromNetwork();
-
-                } else {
-
-                    viewModel.installPosition();
-                }
-
-            } else {
-
-                if(!response.getError().equals("")) {
-
-                    String text = getString(R.string.load_data_from_db_error);
-
-                    text += "\n";
-
-                    text += response.getError();
-
-                    message.setText(text);
-
-                } else {
-
-                    message.setText(R.string.load_data_from_db_error);
-                }
-
-                message.setVisibility(View.VISIBLE);
-            }
-        });
-
-        viewModel.isLoadData().observe(getViewLifecycleOwner(), response -> {
-
-            if(response) {
-
-                viewModel.startInterval();
-
-            } else {
-
-                viewModel.stopInterval();
-            }
-        });
-
-        viewModel.getMessage().observe(getViewLifecycleOwner(), response -> {
-
-            switch (response.getCode()) {
-
-                case CODE_START_LOAD_DATA:
-
-                    message.setText(R.string.load_data_start);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-
-                case CODE_STOP_LOAD_DATA:
-
-                    message.setVisibility(View.INVISIBLE);
-
-                    message.setText("");
-
-                    break;
-
-                case CODE_NONE:
-
-                    break;
-
-                case CODE_LOAD_DATA_0:
-
-                    message.setText(R.string.load_data_0);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-
-                case CODE_LOAD_DATA_1:
-
-                    message.setText(R.string.load_data_1);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-
-                case CODE_LOAD_DATA_2:
-
-                    message.setText(R.string.load_data_2);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-
-                case CODE_LOAD_DATA_3:
-
-                    message.setText(R.string.load_data_3);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-
-                case CODE_EXCEPTION:
-
-                    itemAdapter.submitList(new ArrayList<>());
-
-                    String text = getString(R.string.message_exception);
-
-                    if(response.getMessage() != null) {
-
-                        text += ": ";
-
-                        text += response.getMessage();
-                    }
-
-                    message.setText(text);
-
-                    message.setVisibility(View.VISIBLE);
-
-                    break;
-            }
-        });
-
-        viewModel.getPosition().observe(getViewLifecycleOwner(), response ->
-                recyclerView.scrollToPosition(response));
-
         Picasso picasso = PicassoHelper.getPicasso(requireContext());
-
-        url = "";
 
         viewModel.getStateAndUrl().observe(getViewLifecycleOwner(), response -> {
 
@@ -282,58 +413,41 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
                 url = newUrl;
 
-                progressBar.show();
+                pictureProgressBar.show();
 
-                picasso.load(url)
-                        .error(R.drawable.ic_load_error)
-                        .into(imageView, new Callback() {
+                try {
 
-                            @Override
-                            public void onSuccess() {
+                    picasso.load(url)
+                            .error(R.drawable.ic_load_error)
+                            .into(imageView, new Callback() {
 
-                                progressBar.hide();
-                            }
+                                @Override
+                                public void onSuccess() {
 
-                            @Override
-                            public void onError(Exception e) {
+                                    new Handler(Looper.myLooper())
+                                            .postDelayed(pictureProgressBar::hide, 100);
+                                }
 
-                                progressBar.hide();
+                                @Override
+                                public void onError(Exception e) {
 
-                                url = "";
-                            }
-                        });
+                                    new Handler(Looper.myLooper())
+                                            .postDelayed(pictureProgressBar::hide, 100);
+
+                                    url = "";
+                                }
+                            });
+
+                } catch (Exception e) {
+
+                    viewModel.stateUrlPicture(false, null);
+
+                    new Handler(Looper.myLooper()).postDelayed(pictureProgressBar::hide, 100);
+
+                    url = "";
+                }
             }
         });
-
-        return root;
-    }
-
-    @Override
-    public void onDestroyView() {
-
-        super.onDestroyView();
-
-        LinearLayoutManager linearLayoutManager =
-                ((LinearLayoutManager)recyclerView.getLayoutManager());
-
-        if(linearLayoutManager != null) {
-
-            int position = linearLayoutManager.findFirstVisibleItemPosition();
-
-            viewModel.setPosition(position);
-        }
-
-        binding = null;
-    }
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-
-        super.onAttach(context);
-
-        App app = (App) requireActivity().getApplicationContext();
-
-        app.appComponent.fragmentComponent().create().inject(this);
     }
 
     private void showOrHidePicture(boolean isShow) {
@@ -379,16 +493,6 @@ public class MainFragment extends Fragment implements BackPressedListener {
         set.applyTo(constraintLayout);
     }
 
-    @Override
-    public boolean isCloseApp() {
-
-        boolean isClose = !isOpen;
-
-        if(isOpen) {
-
-            viewModel.stateUrlPicture(false, null);
-        }
-
-        return isClose;
-    }
+    private final ItemAdapter.ClickCallback callback = url ->
+            viewModel.stateUrlPicture(true, url);
 }
