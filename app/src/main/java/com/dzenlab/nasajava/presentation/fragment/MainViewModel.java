@@ -1,5 +1,7 @@
 package com.dzenlab.nasajava.presentation.fragment;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -122,9 +124,7 @@ public class MainViewModel extends ViewModel {
                 .subscribe(this::refreshList);
     }
 
-    public boolean stateUrlPicture(boolean isOpen, @Nullable String url) {
-
-        boolean flag = false;
+    public void stateUrlPicture(boolean isOpen, @Nullable String url) {
 
         StateUrlPictureSP data = stateAndUrl.getValue();
 
@@ -133,8 +133,6 @@ public class MainViewModel extends ViewModel {
             if(url == null) {
 
                 if(data.isOpen()) {
-
-                    flag =  stateUrlPictureUseCase.execute(false, null).isOpen();
 
                     stateAndUrl.setValue(new StateUrlPictureSP(false, data.getUrl()));
                 }
@@ -165,23 +163,17 @@ public class MainViewModel extends ViewModel {
                         newURL = data.getUrl();
                     }
 
-                    flag = stateUrlPictureUseCase.execute(newIsOpen, newURL).isOpen();
-
                     stateAndUrl.setValue(new StateUrlPictureSP(newIsOpen, newURL));
 
                 } else {
 
                     if(isOpen) {
 
-                        flag = stateUrlPictureUseCase.execute(false, null).isOpen();
-
                         stateAndUrl.setValue(new StateUrlPictureSP(false, url));
                     }
                 }
             }
         }
-
-        return flag;
     }
 
     private void initId() {
@@ -198,6 +190,7 @@ public class MainViewModel extends ViewModel {
         Flowable<PagingData<ItemNet>> flowableItemNet =
                 PagingRx.getFlowable(loadItemsUseCase.execute(10));
 
+        @SuppressLint("UnsafeOptInUsageWarning")
         Flowable<PagingData<ItemNet>> flowable = PagingRx.cachedIn(flowableItemNet, viewModelScope)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

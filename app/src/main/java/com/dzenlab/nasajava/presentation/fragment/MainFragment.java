@@ -117,6 +117,28 @@ public class MainFragment extends Fragment implements BackPressedListener {
     }
 
     @Override
+    public void onStart() {
+
+        super.onStart();
+
+        if(recyclerView != null) {
+
+            recyclerView.addOnScrollListener(scrollListener);
+        }
+    }
+
+    @Override
+    public void onStop() {
+
+        super.onStop();
+
+        if(recyclerView != null) {
+
+            recyclerView.removeOnScrollListener(scrollListener);
+        }
+    }
+
+    @Override
     public void onPause() {
 
         super.onPause();
@@ -197,9 +219,6 @@ public class MainFragment extends Fragment implements BackPressedListener {
         recyclerView.setAdapter(itemAdapter);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        recyclerView.setOnTouchListener((view, motionEvent) ->
-                viewModel.stateUrlPicture(false, null));
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -495,4 +514,15 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
     private final ItemAdapter.ClickCallback callback = url ->
             viewModel.stateUrlPicture(true, url);
+
+    private final RecyclerView.OnScrollListener scrollListener =  new RecyclerView.OnScrollListener() {
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+
+            super.onScrolled(recyclerView, dx, dy);
+
+            viewModel.stateUrlPicture(false, null);
+        }
+    };
 }
