@@ -3,9 +3,6 @@ package com.dzenlab.nasajava.repository;
 import com.dzenlab.nasajava.models.ItemNet;
 import com.dzenlab.nasajava.models.PagingDataSP;
 import com.dzenlab.nasajava.models.QueryDB;
-import com.dzenlab.nasajava.models.StatePictureSP;
-import com.dzenlab.nasajava.models.StateUrlPictureSP;
-import com.dzenlab.nasajava.models.UrlPictureSP;
 import java.util.List;
 import io.reactivex.Completable;
 import io.reactivex.Single;
@@ -23,12 +20,6 @@ public interface ItemRepository {
     Single<PagingDataSP> getItemId();
 
     Completable setItemId(PagingDataSP pagingDataSP);
-
-    StateUrlPictureSP getSateUrlPicture();
-
-    Completable setUrl(UrlPictureSP urlPictureSP);
-
-    Completable setStatePicture(StatePictureSP statePictureSP);
 
     Single<List<ItemNet>> getItemList();
 

@@ -66,6 +66,8 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
     private ItemAdapter itemAdapter;
 
+    private boolean firstStart;
+
 
     public static MainFragment newInstance() {
 
@@ -167,10 +169,7 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
         boolean isClose = !isOpen;
 
-        if(isOpen) {
-
-            viewModel.stateUrlPicture(false, null);
-        }
+        if(isOpen) viewModel.stateUrlPicture(false, null);
 
         return isClose;
     }
@@ -196,6 +195,8 @@ public class MainFragment extends Fragment implements BackPressedListener {
         isOpen = false;
 
         url = "";
+
+        firstStart = true;
     }
 
     private void position() {
@@ -522,7 +523,14 @@ public class MainFragment extends Fragment implements BackPressedListener {
 
             super.onScrolled(recyclerView, dx, dy);
 
-            viewModel.stateUrlPicture(false, null);
+            if(firstStart) {
+
+                firstStart = false;
+
+                return;
+            }
+
+            if(isOpen) viewModel.stateUrlPicture(false, null);
         }
     };
 }

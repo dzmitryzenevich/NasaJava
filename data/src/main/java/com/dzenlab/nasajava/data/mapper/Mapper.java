@@ -1,11 +1,8 @@
 package com.dzenlab.nasajava.data.mapper;
 
 import com.dzenlab.nasajava.data.database.models.Item;
-import com.dzenlab.nasajava.data.sharepref.models.StateUrlPicture;
 import com.dzenlab.nasajava.models.ItemNet;
-import com.dzenlab.nasajava.models.StateUrlPictureSP;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import retrofit2.Response;
 
@@ -79,12 +76,5 @@ public class Mapper {
         }
 
         return itemList;
-    }
-
-    public static StateUrlPictureSP getStateUrlPictureSP(StateUrlPicture stateUrlPicture) {
-
-        return new StateUrlPictureSP(
-                stateUrlPicture.isOpen(),
-                stateUrlPicture.getUrl());
     }
 }

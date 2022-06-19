@@ -6,16 +6,10 @@ import com.dzenlab.nasajava.data.database.storage.DatabaseStorage;
 import com.dzenlab.nasajava.data.mapper.Mapper;
 import com.dzenlab.nasajava.data.network.storage.NetworkStorage;
 import com.dzenlab.nasajava.data.sharepref.models.PagingData;
-import com.dzenlab.nasajava.data.sharepref.models.StatePicture;
-import com.dzenlab.nasajava.data.sharepref.models.UrlPicture;
 import com.dzenlab.nasajava.data.sharepref.storage.PagingStorage;
-import com.dzenlab.nasajava.data.sharepref.storage.PictureStorage;
 import com.dzenlab.nasajava.models.ItemNet;
 import com.dzenlab.nasajava.models.PagingDataSP;
 import com.dzenlab.nasajava.models.QueryDB;
-import com.dzenlab.nasajava.models.StatePictureSP;
-import com.dzenlab.nasajava.models.StateUrlPictureSP;
-import com.dzenlab.nasajava.models.UrlPictureSP;
 import com.dzenlab.nasajava.repository.ItemRepository;
 import java.util.List;
 import io.reactivex.Completable;
@@ -25,21 +19,16 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     private final PagingStorage pagingStorage;
 
-    private final PictureStorage pictureStorage;
-
     private final NetworkStorage networkStorage;
 
     private final DatabaseStorage databaseStorage;
 
 
     public ItemRepositoryImpl(PagingStorage pagingStorage,
-                              PictureStorage pictureStorage,
                               NetworkStorage networkStorage,
                               DatabaseStorage databaseStorage) {
 
         this.pagingStorage = pagingStorage;
-
-        this.pictureStorage = pictureStorage;
 
         this.networkStorage = networkStorage;
 
@@ -80,24 +69,6 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Completable setItemId(PagingDataSP pagingDataSP) {
 
         return pagingStorage.setItemId(new PagingData(pagingDataSP.getData()));
-    }
-
-    @Override
-    public StateUrlPictureSP getSateUrlPicture() {
-
-        return Mapper.getStateUrlPictureSP(pictureStorage.getSateUrlPicture());
-    }
-
-    @Override
-    public Completable setUrl(UrlPictureSP urlPictureSP) {
-
-        return pictureStorage.setUrl(new UrlPicture(urlPictureSP.getUrl()));
-    }
-
-    @Override
-    public Completable setStatePicture(StatePictureSP statePictureSP) {
-
-        return pictureStorage.setStatePictureSP(new StatePicture(statePictureSP.isOpen()));
     }
 
     @Override

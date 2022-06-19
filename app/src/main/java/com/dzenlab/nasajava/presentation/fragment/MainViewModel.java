@@ -1,7 +1,6 @@
 package com.dzenlab.nasajava.presentation.fragment;
 
 import android.annotation.SuppressLint;
-
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -11,12 +10,11 @@ import androidx.lifecycle.ViewModelKt;
 import androidx.paging.PagingData;
 import androidx.paging.rxjava2.PagingRx;
 import com.dzenlab.nasajava.models.ItemNet;
-import com.dzenlab.nasajava.models.StateUrlPictureSP;
+import com.dzenlab.nasajava.presentation.model.StateUrlPicture;
 import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
 import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
 import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
 import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
-import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -29,8 +27,6 @@ public class MainViewModel extends ViewModel {
 
     private final GetItemIdUseCase getItemIdUseCase;
 
-    private final StateUrlPictureUseCase stateUrlPictureUseCase;
-
     private final LoadItemsUseCase loadItemsUseCase;
 
     private final DeleteItemUseCase deleteItemUseCase;
@@ -39,7 +35,7 @@ public class MainViewModel extends ViewModel {
 
     private LiveData<PagingData<ItemNet>> itemList;
 
-    private MutableLiveData<StateUrlPictureSP> stateAndUrl;
+    private MutableLiveData<StateUrlPicture> stateAndUrl;
 
     private MutableLiveData<Boolean> refreshList;
 
@@ -48,15 +44,12 @@ public class MainViewModel extends ViewModel {
 
     public MainViewModel(SavePositionAndIdUseCase savePositionAndIdUseCase,
                          GetItemIdUseCase getItemIdUseCase,
-                         StateUrlPictureUseCase stateUrlPictureUseCase,
                          LoadItemsUseCase loadItemsUseCase,
                          DeleteItemUseCase deleteItemUseCase) {
 
         this.savePositionAndIdUseCase = savePositionAndIdUseCase;
 
         this.getItemIdUseCase = getItemIdUseCase;
-
-        this.stateUrlPictureUseCase = stateUrlPictureUseCase;
 
         this.loadItemsUseCase = loadItemsUseCase;
 
@@ -96,7 +89,7 @@ public class MainViewModel extends ViewModel {
         return itemList;
     }
 
-    public LiveData<StateUrlPictureSP> getStateAndUrl() {
+    public LiveData<StateUrlPicture> getStateAndUrl() {
 
         return stateAndUrl;
     }
@@ -126,7 +119,7 @@ public class MainViewModel extends ViewModel {
 
     public void stateUrlPicture(boolean isOpen, @Nullable String url) {
 
-        StateUrlPictureSP data = stateAndUrl.getValue();
+        StateUrlPicture data = stateAndUrl.getValue();
 
         if(data != null) {
 
@@ -134,7 +127,7 @@ public class MainViewModel extends ViewModel {
 
                 if(data.isOpen()) {
 
-                    stateAndUrl.setValue(new StateUrlPictureSP(false, data.getUrl()));
+                    stateAndUrl.setValue(new StateUrlPicture(false, data.getUrl()));
                 }
 
             } else {
@@ -163,13 +156,13 @@ public class MainViewModel extends ViewModel {
                         newURL = data.getUrl();
                     }
 
-                    stateAndUrl.setValue(new StateUrlPictureSP(newIsOpen, newURL));
+                    stateAndUrl.setValue(new StateUrlPicture(newIsOpen, newURL));
 
                 } else {
 
                     if(isOpen) {
 
-                        stateAndUrl.setValue(new StateUrlPictureSP(false, url));
+                        stateAndUrl.setValue(new StateUrlPicture(false, url));
                     }
                 }
             }
@@ -202,9 +195,7 @@ public class MainViewModel extends ViewModel {
 
     private void initPicture() {
 
-        StateUrlPictureSP stateUrlPictureSP = stateUrlPictureUseCase.execute(null, null);
-
-        stateAndUrl = new MutableLiveData<>(stateUrlPictureSP);
+        stateAndUrl = new MutableLiveData<>(new StateUrlPicture(false, ""));
     }
 
     private void initialRefreshList() {

@@ -5,18 +5,12 @@ import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
 import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
 import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
 import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
-import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
+
 import dagger.Module;
 import dagger.Provides;
 
 @Module
 public class DomainModule {
-
-    @Provides
-    public StateUrlPictureUseCase provideStateUrlPictureUseCase(ItemRepository itemRepository) {
-
-        return new StateUrlPictureUseCase(itemRepository);
-    }
 
     @Provides
     public GetItemIdUseCase provideGetItemIdUseCase(ItemRepository itemRepository) {

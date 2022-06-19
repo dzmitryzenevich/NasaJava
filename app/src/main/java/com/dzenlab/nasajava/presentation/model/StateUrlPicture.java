@@ -1,10 +1,10 @@
-package com.dzenlab.nasajava.models;
+package com.dzenlab.nasajava.presentation.model;
 
 import androidx.annotation.NonNull;
 import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
-public class StateUrlPictureSP {
+public class StateUrlPicture {
 
     private final boolean isOpen;
 
@@ -12,7 +12,7 @@ public class StateUrlPictureSP {
     private final String url;
 
 
-    public StateUrlPictureSP(boolean isOpen, @NotNull String url) {
+    public StateUrlPicture(boolean isOpen, @NotNull String url) {
 
         this.isOpen = isOpen;
 
@@ -33,8 +33,8 @@ public class StateUrlPictureSP {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof StateUrlPictureSP)) return false;
-        StateUrlPictureSP that = (StateUrlPictureSP) o;
+        if (!(o instanceof StateUrlPicture)) return false;
+        StateUrlPicture that = (StateUrlPicture) o;
         return isOpen() == that.isOpen() && getUrl().equals(that.getUrl());
     }
 

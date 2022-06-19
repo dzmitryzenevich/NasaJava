@@ -7,15 +7,12 @@ import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
 import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
 import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
 import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
-import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 
 public class MainViewModelFactory implements ViewModelProvider.Factory {
 
     private final SavePositionAndIdUseCase savePositionAndIdUseCase;
 
     private final GetItemIdUseCase getItemIdUseCase;
-
-    private final StateUrlPictureUseCase stateUrlPictureUseCase;
 
     private final LoadItemsUseCase loadItemsUseCase;
 
@@ -24,15 +21,12 @@ public class MainViewModelFactory implements ViewModelProvider.Factory {
 
     public MainViewModelFactory(SavePositionAndIdUseCase savePositionAndIdUseCase,
                                 GetItemIdUseCase getItemIdUseCase,
-                                StateUrlPictureUseCase stateUrlPictureUseCase,
                                 LoadItemsUseCase loadItemsUseCase,
                                 DeleteItemUseCase deleteItemUseCase) {
 
         this.savePositionAndIdUseCase = savePositionAndIdUseCase;
 
         this.getItemIdUseCase = getItemIdUseCase;
-
-        this.stateUrlPictureUseCase = stateUrlPictureUseCase;
 
         this.loadItemsUseCase = loadItemsUseCase;
 
@@ -47,7 +41,6 @@ public class MainViewModelFactory implements ViewModelProvider.Factory {
         return (T) new MainViewModel(
                 savePositionAndIdUseCase,
                 getItemIdUseCase,
-                stateUrlPictureUseCase,
                 loadItemsUseCase,
                 deleteItemUseCase);
     }

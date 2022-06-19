@@ -5,7 +5,6 @@ import com.dzenlab.nasajava.usecase.DeleteItemUseCase;
 import com.dzenlab.nasajava.usecase.GetItemIdUseCase;
 import com.dzenlab.nasajava.usecase.LoadItemsUseCase;
 import com.dzenlab.nasajava.usecase.SavePositionAndIdUseCase;
-import com.dzenlab.nasajava.usecase.StateUrlPictureUseCase;
 import dagger.Module;
 import dagger.Provides;
 
@@ -14,7 +13,6 @@ public class PresentationModule {
 
     @Provides
     public MainViewModelFactory provideMVMFactory(SavePositionAndIdUseCase SavePositionAndIdUseCase,
-                                                  StateUrlPictureUseCase stateUrlPictureUseCase,
                                                   LoadItemsUseCase loadItemsUseCase,
                                                   DeleteItemUseCase deleteItemUseCase,
                                                   GetItemIdUseCase getItemIdUseCase) {
@@ -22,7 +20,6 @@ public class PresentationModule {
         return new MainViewModelFactory(
                 SavePositionAndIdUseCase,
                 getItemIdUseCase,
-                stateUrlPictureUseCase,
                 loadItemsUseCase,
                 deleteItemUseCase);
     }
